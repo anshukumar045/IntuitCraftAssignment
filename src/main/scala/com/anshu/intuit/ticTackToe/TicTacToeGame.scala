@@ -12,27 +12,25 @@ class TicTacToeGame (
 
   import Utility._
 
-  private var players = Seq(playerOne, playerTwo)
-  private var game: TicTacToeGameState = TicTacToeGameState()
-
   /**
    * Method to play the game till
    * either of the player win or match is Draw
    */
-  def play: Unit = {
-    var moveNumber = 0
-    println(display(game))
-    while(!game.isGameOver) {
-      println(s"Player ${moveNumber % 2 + 1} makes move")
-      val player = players.head
-      game = player.move(game)
-      println(display(game))
-      players = players.tail :+ player
-      moveNumber += 1
+ def play: Unit = {
+    def helper(moveNumber: Int,players: Seq[MoveOnBoard[TicTacToeGameState]], game: TicTacToeGameState): TicTacToeGameState  = {
+      game match {
+        case g if g.isGameOver => g
+        case g =>
+          println(s"Player ${moveNumber % 2 + 1} makes move")
+          println(display(game))
+          helper(moveNumber+1, players.tail :+ players.head, players.head.move(g))
+      }
     }
-    if(game.playerOneWin) println(PlayerOneWins)
-    else if(game.playerTwoWin) println(PlayerTwoWins)
-    else println(Draw)
+    helper(0, Seq(playerOne, playerTwo), TicTacToeGameState()) match {
+      case g if g.playerOneWin =>  println(PlayerOneWins)
+      case g if g.playerTwoWin =>  println(PlayerTwoWins)
+      case _ => println(Draw)
+    }
   }
 
   /**
